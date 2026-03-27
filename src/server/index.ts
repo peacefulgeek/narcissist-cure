@@ -536,9 +536,11 @@ if (isProduction) {
   }));
 
   // SPA fallback — serve index.html for all non-API routes
+  const knownPaths = ['/', '/articles', '/categories', '/about', '/start-here', '/privacy', '/terms', '/quiz', '/pattern-check', '/404'];
   app.get('*', (req, res) => {
-    // Return 404 status for /404 path
-    const status = req.path === '/404' ? 404 : 200;
+    const p = req.path;
+    const isKnown = knownPaths.includes(p) || p.startsWith('/articles/') || p.startsWith('/categories/');
+    const status = isKnown ? 200 : 404;
     const indexPath = resolve(clientDir, 'index.html');
     if (existsSync(indexPath)) {
       res.status(status).sendFile(indexPath);
